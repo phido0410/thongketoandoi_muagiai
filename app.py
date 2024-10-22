@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import requests
 import csv
-import matplotlib.pyplot as plt  # Thêm dòng này để import matplotlib
+import matplotlib.pyplot as plt
 
 # Hàm để lấy dữ liệu từ API
 def get_team_data(team_id, tournament_id, season_id):
@@ -18,17 +18,25 @@ def get_team_data(team_id, tournament_id, season_id):
         st.error(f"Failed to retrieve data: {response.status_code}")
         return None
 
-# Phần giao diện nhập thông tin
-st.title("Crawl Dữ Liệu Cầu Thủ")
+# Thiết lập giao diện
+st.image('football_banner.jpeg', use_column_width=True)  # Ảnh banner bóng đá
+st.title("⚽ Crawl Dữ Liệu Cầu Thủ Bóng Đá ⚽")
 
+st.markdown("""
+    **Chào mừng bạn đến với trang thống kê bóng đá!**
+    Hãy nhập các thông tin cần thiết và chúng tôi sẽ lấy dữ liệu về đội bóng của bạn.
+""")
+
+# Giao diện chọn thông tin đội bóng
 team_id = st.text_input("Nhập team ID:")
-tournament_id = st.text_input("Nhập tournament ID:")
-season_id = st.text_input("Nhập season ID:")
+tournament_id = st.text_input("Nhập tournament ID (Giải đấu):")
+season_id = st.text_input("Nhập season ID (Mùa giải):")
 
 # Khi nhấn nút "Crawl Dữ Liệu"
 if st.button("Crawl Dữ Liệu"):
     if team_id and tournament_id and season_id:
-        data = get_team_data(team_id, tournament_id, season_id)
+        with st.spinner('Đang tải dữ liệu...'):
+            data = get_team_data(team_id, tournament_id, season_id)
 
         if data:
             player_stats = {}
@@ -71,7 +79,7 @@ if st.button("Crawl Dữ Liệu"):
         st.error("Vui lòng nhập đầy đủ thông tin!")
 
 # Phần thống kê cả mùa
-st.title('Thống Kê Cầu Thủ Mùa Giải')
+st.title('📊 Thống Kê Cầu Thủ Mùa Giải 📊')
 
 # Input for file name
 file_name = st.text_input("Nhập tên file CSV (có đuôi):")
@@ -158,26 +166,26 @@ if file_name:
             st.pyplot(fig)
 
         # Top 3 Goals
-        st.header('Top 3 Cầu Thủ Có Bàn Thắng Cao Nhất')
+        st.header('⚽ Top 3 Cầu Thủ Có Bàn Thắng Cao Nhất ⚽')
         st.write(top_scorers[['name', 'goals', 'rating']])
         plot_top_players(top_scorers, 'goals', 'Top 3 Cầu Thủ Có Bàn Thắng Cao Nhất', 'purple')
 
         # Top 3 Assists
-        st.header('Top 3 Cầu Thủ Có Kiến Tạo Nhiều Nhất')
+        st.header('🎯 Top 3 Cầu Thủ Kiến Tạo Nhiều Nhất 🎯')
         st.write(top_assist_providers[['name', 'assists', 'rating']])
-        plot_top_players(top_assist_providers, 'assists', 'Top 3 Cầu Thủ Có Kiến Tạo Nhiều Nhất', 'cyan')
+        plot_top_players(top_assist_providers, 'assists', 'Top 3 Cầu Thủ Kiến Tạo Nhiều Nhất', 'orange')
 
         # Top 3 Key Passes
-        st.header('Top 3 Cầu Thủ Có Key Pass Nhiều Nhất')
+        st.header('📊 Top 3 Cầu Thủ Có Đường Chuyền Chính Xác Nhiều Nhất 📊')
         st.write(top_key_passes[['name', 'keyPasses', 'rating']])
-        plot_top_players(top_key_passes, 'keyPasses', 'Top 3 Cầu Thủ Có Key Pass Nhiều Nhất', 'orange')
+        plot_top_players(top_key_passes, 'keyPasses', 'Top 3 Cầu Thủ Có Đường Chuyền Chính Xác Nhiều Nhất', 'green')
 
         # Top 3 Tackles
-        st.header('Top 3 Cầu Thủ Có Nhiều Cú Tắc Nhất')
+        st.header('🛡️ Top 3 Cầu Thủ Có Số Pha Tắc Bóng Cao Nhất 🛡️')
         st.write(top_tacklers[['name', 'tackles', 'rating']])
-        plot_top_players(top_tacklers, 'tackles', 'Top 3 Cầu Thủ Có Nhiều Cú Tắc Nhất', 'green')
+        plot_top_players(top_tacklers, 'tackles', 'Top 3 Cầu Thủ Có Số Pha Tắc Bóng Cao Nhất', 'red')
 
     except FileNotFoundError:
-        st.error(f"File {file_name} không tìm thấy. Vui lòng kiểm tra tên file và thử lại.")
+        st.error(f"File {file_name} không tồn tại!")
 else:
-    st.write("Vui lòng nhập tên file CSV.")
+    st.info("Vui lòng nhập tên file CSV để xem thống kê!")
